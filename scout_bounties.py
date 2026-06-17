@@ -189,7 +189,7 @@ def main():
         return
 
     count = len(new_bounties)
-    print(f"🎯 Discovered {count} NEW bounty opportunity{'ies' if count != 1 else ''}!")
+    print(f"🎯 Discovered {count} NEW bounty opportunit{'ies' if count != 1 else 'y'}!")
 
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     plural  = "ies" if count != 1 else "y"
