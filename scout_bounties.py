@@ -15,8 +15,22 @@ SEARCH_QUERIES = [
     'is:issue is:open bounty in:title,body sort:updated-desc',
     'is:issue is:open reward bounty sort:updated-desc',
     'is:issue is:open "paid" "PR" "bounty" sort:updated-desc',
+    # Alternative naming conventions platforms use instead of "bounty"
+    'is:issue is:open mission in:title reward sort:updated-desc',
+    'is:issue is:open mission in:title prize sort:updated-desc',
+    'is:issue is:open "quest" reward in:title,body sort:updated-desc',
+    'is:issue is:open "challenge" prize in:title,body sort:updated-desc',
+    'is:issue is:open "task" reward "open" sort:updated-desc',
+    'is:issue is:open "open task" reward sort:updated-desc',
+    'is:issue is:open "wanted" reward "$" sort:updated-desc',
+    'is:issue is:open "paid issue" sort:updated-desc',
+    'is:issue is:open "up for grabs" reward sort:updated-desc',
     # Opire bounty platform
     'is:issue is:open "Opire" bounty sort:updated-desc',
+    # Gitcoin / Superfluid / protocol-specific bounty platforms
+    'is:issue is:open "gitcoin" bounty sort:updated-desc',
+    'is:issue is:open "superfluid" bounty sort:updated-desc',
+    'is:issue is:open "dework" task reward sort:updated-desc',
     # Web3 / blockchain ecosystem grants & bounties
     'is:issue is:open "HBAR" bounty sort:updated-desc',
     'is:issue is:open "Hedera" bounty sort:updated-desc',
@@ -24,9 +38,21 @@ SEARCH_QUERIES = [
     'is:issue is:open "Stacks" bounty sort:updated-desc',
     'is:issue is:open "Base" bounty sort:updated-desc',
     'is:issue is:open "Mantle" bounty sort:updated-desc',
+    'is:issue is:open "Arbitrum" bounty sort:updated-desc',
+    'is:issue is:open "Polygon" bounty sort:updated-desc',
+    'is:issue is:open "Solana" bounty sort:updated-desc',
+    'is:issue is:open "Near" bounty sort:updated-desc',
+    'is:issue is:open "Avalanche" bounty sort:updated-desc',
+    'is:issue is:open "ICP" bounty sort:updated-desc',
+    # Intuition.box / reality tunnel style missions
+    'is:issue is:open "intuition" mission in:title,body sort:updated-desc',
+    'is:issue is:open mission "mainnet" reward sort:updated-desc',
+    # Dev tooling / AI bounties
     'is:issue is:open hackathon prize "TypeScript" sort:updated-desc',
     'is:issue is:open "LangChain" OR "LangGraph" bounty sort:updated-desc',
     'is:issue is:open grant "open source" "good first issue" sort:updated-desc',
+    'is:issue is:open "AI agent" bounty reward sort:updated-desc',
+    'is:issue is:open "MCP" bounty sort:updated-desc',
 ]
 
 # ─── Spam / noise blocklist ───────────────────────────────────────────────────
