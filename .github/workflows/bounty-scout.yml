@@ -1,0 +1,42 @@
+name: Scout Active Bounties Hourly
+
+on:
+  schedule:
+    # Runs at minute 0 of every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger from Actions tab
+
+permissions:
+  contents: write   # needed to commit seen_bounties.json back to repo
+  issues: write     # needed to open bounty-alert issues
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Bounty Scout
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python scout_bounties.py
+
+      - name: Commit updated state file
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seen_bounties.json
+          # Only commit if there are changes
+          git diff --cached --quiet || git commit -m "chore: update seen bounties state [skip ci]"
+          git push
