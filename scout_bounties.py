@@ -1,5 +1,6 @@
 import json
 import os
+import time
 import urllib.request
 import urllib.parse
 from datetime import datetime, timezone
@@ -49,7 +50,8 @@ SEARCH_QUERIES = [
     'is:issue is:open mission "mainnet" reward sort:updated-desc',
     # Dev tooling / AI bounties
     'is:issue is:open hackathon prize "TypeScript" sort:updated-desc',
-    'is:issue is:open "LangChain" OR "LangGraph" bounty sort:updated-desc',
+    'is:issue is:open "LangChain" bounty sort:updated-desc',
+    'is:issue is:open "LangGraph" bounty sort:updated-desc',
     'is:issue is:open grant "open source" "good first issue" sort:updated-desc',
     'is:issue is:open "AI agent" bounty reward sort:updated-desc',
     'is:issue is:open "MCP" bounty sort:updated-desc',
@@ -209,6 +211,7 @@ def main():
     print("🔍 Scouting GitHub for active bounties...")
     for query in SEARCH_QUERIES:
         results = search_github(query, github_token)
+        time.sleep(2)  # stay under GitHub Search API rate limit (30 req/min)
         for item in results.get("items", []):
             url = item.get("html_url")
             if url and url not in seen_urls and is_clean_candidate(item):
