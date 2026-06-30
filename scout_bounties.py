@@ -62,12 +62,33 @@ BLOCKLIST = [
     "airdrop", "referral", "casino", "gambling", "trading bot",
     "blog post", "article writing", "tutorial proposal", "content creator",
     "phishing", "spam", "scam",
+    "honeypot-task", "请先给项目加星标",  # fake bounty / star-gating farms
+]
+
+# Issue titles matching these substrings are meta-notifications, not real bounties.
+TITLE_BLOCKLIST = [
+    "bounty alert",           # other BountyScout forks' scan digests
+    "new opportunit",         # "New Opportunities" / typo "Opportunityies"
+    "account recovery",       # pypi/support tickets, not code tasks
+]
+
+# GitHub labels that mark notification/meta issues rather than actionable work.
+LABEL_BLOCKLIST = [
+    "bounty-alert",
+    "honeypot-task",
 ]
 
 # ─── Repo blocklist (farming repos, self-repo) ────────────────────────────────
 REPO_BLOCKLIST = [
-    "SecureBananaLabs/bug-bounty",  # farming repo — bulk fake issues
-    "greyw0rks/bountyscout",        # self — bot's own alert issues
+    "SecureBananaLabs/bug-bounty",       # farming repo — bulk fake issues
+    "greyw0rks/bountyscout",             # self — bot's own alert issues
+    "zhangjiayang6835-cyber/ai-research",  # honeypot — star-gated fake $25/$50 tasks
+    "pypi/support",                      # account recovery tickets, not bounties
+]
+
+# Repo name suffixes (case-insensitive) that indicate another BountyScout instance.
+REPO_SUFFIX_BLOCKLIST = [
+    "/bountyscout",
 ]
 
 
@@ -124,11 +145,21 @@ def is_clean_candidate(item: dict) -> bool:
 
     # Skip blocked repos (farming accounts, self-repo)
     repo = item.get("repository_url", "").replace("https://api.github.com/repos/", "")
-    if any(repo.lower() == blocked.lower() for blocked in REPO_BLOCKLIST):
+    repo_lower = repo.lower()
+    if any(repo_lower == blocked.lower() for blocked in REPO_BLOCKLIST):
+        return False
+    if any(repo_lower.endswith(suffix) for suffix in REPO_SUFFIX_BLOCKLIST):
+        return False
+
+    labels = [label.get("name", "").lower() for label in item.get("labels", [])]
+    if any(blocked in labels for blocked in LABEL_BLOCKLIST):
         return False
 
     title = str(item.get("title", "")).lower()
     body = str(item.get("body", "") or "").lower()
+
+    if any(term in title for term in TITLE_BLOCKLIST):
+        return False
 
     if any(term in title or term in body for term in BLOCKLIST):
         return False
@@ -255,7 +286,11 @@ def main():
         send_discord(discord_webhook, notif_msg.replace("•", "-"))
 
     # ── GitHub Issue (zero-config, uses built-in GITHUB_TOKEN) ───────────────
-    if github_token and repo_fullname:
+    # Set BOUNTYSCOUT_GITHUB_ISSUES=0 to skip issue creation (Telegram/Discord only).
+    create_github_issues = os.environ.get("BOUNTYSCOUT_GITHUB_ISSUES", "1").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
+    if github_token and repo_fullname and create_github_issues:
         issue_title = f"🎯 Bounty Alert: {count} New Opportunit{plural} — {now_str}"
         issue_body  = f"### Bounty Scan Results\n\n**Scan Time:** {now_str}\n\n"
         for i, b in enumerate(new_bounties, 1):
