@@ -71,6 +71,25 @@ Edit `SEARCH_QUERIES` in `scout_bounties.py` to add or remove terms.
 
 ## Spam Filters
 
-Issues are dropped if they contain any of: `airdrop`, `referral`, `casino`, `gambling`, `trading bot`, `blog post`, `article writing`, `tutorial proposal`, `content creator`, `phishing`, `spam`, `scam`.
+Issues are dropped if they contain any of: `airdrop`, `referral`, `casino`, `gambling`, `trading bot`, `blog post`, `article writing`, `tutorial proposal`, `content creator`, `phishing`, `spam`, `scam`, or match known farming patterns (honeypot tasks, star-gating bots).
 
-Edit `BLOCKLIST` in `scout_bounties.py` to tune.
+Additional filters:
+
+| Filter | What it blocks |
+|---|---|
+| **Title blocklist** | Meta scan digests (`Bounty Alert`, `New Opportunit…`), support tickets (`account recovery`) |
+| **Label blocklist** | `bounty-alert`, `honeypot-task` |
+| **Repo blocklist** | Known farming repos, `pypi/support`, other `*/bountyscout` forks |
+
+Edit `BLOCKLIST`, `TITLE_BLOCKLIST`, `LABEL_BLOCKLIST`, and `REPO_BLOCKLIST` in `scout_bounties.py` to tune.
+
+### Disable GitHub Issue alerts
+
+If hourly issue creation is too noisy (see #100), keep Telegram/Discord and set:
+
+```yaml
+env:
+  BOUNTYSCOUT_GITHUB_ISSUES: "0"
+```
+
+in `.github/workflows/bounty-scout.yml`.
